@@ -14,11 +14,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -48,6 +50,7 @@ import com.example.cookingrecipeapp.ui.theme.CookingRecipeAppTheme
 
 
 @Composable
+
 fun RecipeDetailScreen(navController: NavController, recipeId: Int) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val recipeViewModel: RecipeViewModel = viewModel(
@@ -64,6 +67,16 @@ fun RecipeDetailScreen(navController: NavController, recipeId: Int) {
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    if (recipe != null) {
+                        IconButton(onClick = {
+                            recipeViewModel.delete(recipe)
+                            navController.popBackStack()
+                        }) {
+                            Icon(Icons.Default.Delete, contentDescription = "Delete")
+                        }
                     }
                 }
             )
