@@ -36,13 +36,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.cookingrecipeapp.data.sampleRecipes
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.cookingrecipeapp.viewmodel.RecipeViewModel
+import com.example.cookingrecipeapp.viewmodel.RecipeViewModelFactory
+import android.app.Application
 import com.example.cookingrecipeapp.ui.theme.CookingRecipeAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
+
+
 @Composable
 fun RecipeDetailScreen(navController: NavController, recipeId: Int) {
-    val recipe = sampleRecipes.find { it.id == recipeId }
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val recipeViewModel: RecipeViewModel = viewModel(
+        factory = RecipeViewModelFactory(context.applicationContext as Application)
+    )
+    val recipeFlow = recipeViewModel.getRecipe(recipeId)
+    val recipeState = recipeFlow.collectAsStateWithLifecycle(initialValue = null)
+    val recipe = recipeState.value
 
     Scaffold(
         topBar = {
@@ -87,8 +100,10 @@ fun RecipeDetailScreen(navController: NavController, recipeId: Int) {
                     .padding(innerPadding)
             ) {
                 item {
+                    val defaultImage = com.example.cookingrecipeapp.R.drawable.ic_launcher_foreground
+                    val imageRes = if (recipe.image != 0) recipe.image else defaultImage
                     Image(
-                        painter = painterResource(id = recipe.image),
+                        painter = painterResource(id = imageRes),
                         contentDescription = recipe.name,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -107,7 +122,7 @@ fun RecipeDetailScreen(navController: NavController, recipeId: Int) {
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold
                         )
-                        recipe.ingredients.forEach { ingredient ->
+                        recipe.ingredients.split(",").map { it.trim() }.forEach { ingredient ->
                             Text(text = "- $ingredient")
                         }
                         Spacer(modifier = Modifier.height(16.dp))
