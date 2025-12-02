@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -71,6 +72,11 @@ fun RecipeDetailScreen(navController: NavController, recipeId: Int) {
                 },
                 actions = {
                     if (recipe != null) {
+                        IconButton(onClick = {
+                            navController.navigate("edit_recipe/${recipe.id}")
+                        }) {
+                            Icon(Icons.Default.Edit, contentDescription = "Edit")
+                        }
                         IconButton(onClick = {
                             recipeViewModel.delete(recipe)
                             navController.popBackStack()

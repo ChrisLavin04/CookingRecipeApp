@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.cookingrecipeapp.ui.CreateRecipeScreen
+import com.example.cookingrecipeapp.ui.EditRecipeScreen
 import com.example.cookingrecipeapp.ui.FavouritesScreen
 import com.example.cookingrecipeapp.ui.HistoryScreen
 import com.example.cookingrecipeapp.ui.ProfileScreen
@@ -28,6 +29,15 @@ fun AppNavigation() {
             val recipeId = backStackEntry.arguments?.getInt("recipeId")
             if (recipeId != null) {
                 RecipeDetailScreen(navController = navController, recipeId = recipeId)
+            }
+        }
+        composable(
+            route = "edit_recipe/{recipeId}",
+            arguments = listOf(navArgument("recipeId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val recipeId = backStackEntry.arguments?.getInt("recipeId")
+            if (recipeId != null) {
+                EditRecipeScreen(navController = navController, recipeId = recipeId)
             }
         }
     }
