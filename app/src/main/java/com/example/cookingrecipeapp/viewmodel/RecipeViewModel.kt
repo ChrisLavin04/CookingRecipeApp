@@ -17,11 +17,17 @@ import kotlinx.coroutines.launch
 class RecipeViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: RecipeRepository
     val recipes: StateFlow<List<Recipe>>
+    val favoriteRecipes: StateFlow<List<Recipe>>
 
     init {
         val db = AppDatabase.getDatabase(application)
         repository = RecipeRepository(db.recipeDao())
         recipes = repository.getAllRecipes().stateIn(
+            viewModelScope,
+            SharingStarted.Lazily,
+            emptyList()
+        )
+        favoriteRecipes = repository.getFavoriteRecipes().stateIn(
             viewModelScope,
             SharingStarted.Lazily,
             emptyList()
@@ -40,6 +46,10 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
 
     fun delete(recipe: Recipe) = viewModelScope.launch {
         repository.deleteRecipe(recipe)
+    }
+
+    fun toggleFavorite(recipe: Recipe) = viewModelScope.launch {
+        repository.updateRecipe(recipe.copy(isFavorite = !recipe.isFavorite))
     }
 }
 

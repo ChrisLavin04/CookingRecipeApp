@@ -28,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,6 +43,11 @@ import com.example.cookingrecipeapp.ui.theme.CookingRecipeAppTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavouritesScreen(navController: NavController) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val recipeViewModel: com.example.cookingrecipeapp.viewmodel.RecipeViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+        factory = com.example.cookingrecipeapp.viewmodel.RecipeViewModelFactory(context.applicationContext as android.app.Application)
+    )
+    val favoriteRecipes by recipeViewModel.favoriteRecipes.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
 
     Scaffold(
@@ -95,8 +101,12 @@ fun FavouritesScreen(navController: NavController) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(sampleRecipes) { recipe -> // Placeholder for favorite recipe list
-                    RecipeCard(navController, recipe)
+                items(favoriteRecipes) { recipe ->
+                    RecipeCard(
+                        navController, 
+                        recipe,
+                        onToggleFavorite = { recipeViewModel.toggleFavorite(recipe) }
+                    )
                 }
             }
         }

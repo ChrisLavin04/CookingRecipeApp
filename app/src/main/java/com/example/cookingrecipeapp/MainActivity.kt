@@ -139,7 +139,11 @@ fun HomeScreen(navController: NavController) {
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(recipes) { recipe ->
-                    RecipeCard(navController, recipe)
+                    RecipeCard(
+                        navController, 
+                        recipe, 
+                        onToggleFavorite = { recipeViewModel.toggleFavorite(recipe) }
+                    )
                 }
             }
         }
@@ -147,8 +151,7 @@ fun HomeScreen(navController: NavController) {
 }
 
 @Composable
-fun RecipeCard(navController: NavController, recipe: Recipe) {
-    var isFavorite by remember { mutableStateOf(false) }
+fun RecipeCard(navController: NavController, recipe: Recipe, onDelete: (() -> Unit)? = null, onToggleFavorite: (() -> Unit)? = null) {
     val defaultImage = R.drawable.ic_launcher_foreground
     val imageRes = if (recipe.image != 0) recipe.image else defaultImage
 
@@ -180,11 +183,11 @@ fun RecipeCard(navController: NavController, recipe: Recipe) {
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
-                    IconButton(onClick = { isFavorite = !isFavorite }) {
+                    IconButton(onClick = { onToggleFavorite?.invoke() }) {
                         Icon(
-                            imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                            imageVector = if (recipe.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                             contentDescription = "Favorite",
-                            tint = if (isFavorite) Color.Red else Color.Gray
+                            tint = if (recipe.isFavorite) Color.Red else Color.Gray
                         )
                     }
                 }

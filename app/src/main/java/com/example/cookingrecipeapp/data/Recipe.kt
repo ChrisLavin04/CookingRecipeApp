@@ -12,5 +12,6 @@ data class Recipe(
     @ColumnInfo(name = "ingredients")
     val ingredients: String, // Comma-separated for Room
     val guide: String,
-    @DrawableRes val image: Int
+    @DrawableRes val image: Int,
+    val isFavorite: Boolean = false
 )
