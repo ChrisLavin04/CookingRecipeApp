@@ -14,5 +14,5 @@ data class Recipe(
     val guide: String,
     @DrawableRes val image: Int,
     val isFavorite: Boolean = false,
-    val lastViewedAt: Long? = null
+    val isViewed: Boolean = false
 )

@@ -59,7 +59,7 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun markAsViewed(recipe: Recipe) = viewModelScope.launch {
-        repository.updateRecipe(recipe.copy(lastViewedAt = System.currentTimeMillis()))
+        repository.updateRecipe(recipe.copy(isViewed = true))
     }
 }
 
