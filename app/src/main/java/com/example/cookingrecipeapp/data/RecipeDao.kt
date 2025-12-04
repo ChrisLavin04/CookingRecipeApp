@@ -14,6 +14,9 @@ interface RecipeDao {
     @Query("SELECT * FROM recipes WHERE isFavorite = 1")
     fun getFavoriteRecipes(): Flow<List<Recipe>>
 
+    @Query("SELECT * FROM recipes WHERE lastViewedAt IS NOT NULL ORDER BY lastViewedAt DESC")
+    fun getRecentlyViewedRecipes(): Flow<List<Recipe>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRecipe(recipe: Recipe): Long
 

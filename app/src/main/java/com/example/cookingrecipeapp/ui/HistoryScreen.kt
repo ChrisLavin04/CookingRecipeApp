@@ -28,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,12 +37,16 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.cookingrecipeapp.RecipeCard
-import com.example.cookingrecipeapp.data.sampleRecipes
 import com.example.cookingrecipeapp.ui.theme.CookingRecipeAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryScreen(navController: NavController) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val recipeViewModel: com.example.cookingrecipeapp.viewmodel.RecipeViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+        factory = com.example.cookingrecipeapp.viewmodel.RecipeViewModelFactory(context.applicationContext as android.app.Application)
+    )
+    val recentlyViewedRecipes by recipeViewModel.recentlyViewedRecipes.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
 
     Scaffold(
@@ -95,8 +100,12 @@ fun HistoryScreen(navController: NavController) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(sampleRecipes.take(2)) { recipe -> // Placeholder for history recipe list
-                    RecipeCard(navController, recipe)
+                items(recentlyViewedRecipes) { recipe ->
+                    RecipeCard(
+                        navController, 
+                        recipe,
+                        onToggleFavorite = { recipeViewModel.toggleFavorite(recipe) }
+                    )
                 }
             }
         }

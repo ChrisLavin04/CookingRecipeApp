@@ -13,5 +13,6 @@ data class Recipe(
     val ingredients: String, // Comma-separated for Room
     val guide: String,
     @DrawableRes val image: Int,
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
+    val lastViewedAt: Long? = null
 )

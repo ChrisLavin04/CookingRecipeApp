@@ -18,6 +18,7 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
     private val repository: RecipeRepository
     val recipes: StateFlow<List<Recipe>>
     val favoriteRecipes: StateFlow<List<Recipe>>
+    val recentlyViewedRecipes: StateFlow<List<Recipe>>
 
     init {
         val db = AppDatabase.getDatabase(application)
@@ -28,6 +29,11 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
             emptyList()
         )
         favoriteRecipes = repository.getFavoriteRecipes().stateIn(
+            viewModelScope,
+            SharingStarted.Lazily,
+            emptyList()
+        )
+        recentlyViewedRecipes = repository.getRecentlyViewedRecipes().stateIn(
             viewModelScope,
             SharingStarted.Lazily,
             emptyList()
@@ -50,6 +56,10 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
 
     fun toggleFavorite(recipe: Recipe) = viewModelScope.launch {
         repository.updateRecipe(recipe.copy(isFavorite = !recipe.isFavorite))
+    }
+
+    fun markAsViewed(recipe: Recipe) = viewModelScope.launch {
+        repository.updateRecipe(recipe.copy(lastViewedAt = System.currentTimeMillis()))
     }
 }
 

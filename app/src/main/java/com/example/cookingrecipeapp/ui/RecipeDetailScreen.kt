@@ -61,6 +61,11 @@ fun RecipeDetailScreen(navController: NavController, recipeId: Int) {
     val recipeState = recipeFlow.collectAsStateWithLifecycle(initialValue = null)
     val recipe = recipeState.value
 
+    // Mark recipe as viewed when it's loaded
+    androidx.compose.runtime.LaunchedEffect(recipe) {
+        recipe?.let { recipeViewModel.markAsViewed(it) }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
