@@ -47,8 +47,8 @@ fun FavouritesScreen(navController: NavController) {
     val recipeViewModel: com.example.cookingrecipeapp.viewmodel.RecipeViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
         factory = com.example.cookingrecipeapp.viewmodel.RecipeViewModelFactory(context.applicationContext as android.app.Application)
     )
-    val favoriteRecipes by recipeViewModel.favoriteRecipes.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
+    val favoriteRecipes by recipeViewModel.searchFavoriteRecipes(searchQuery).collectAsState(initial = emptyList())
 
     Scaffold(
         topBar = {

@@ -46,8 +46,8 @@ fun HistoryScreen(navController: NavController) {
     val recipeViewModel: com.example.cookingrecipeapp.viewmodel.RecipeViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
         factory = com.example.cookingrecipeapp.viewmodel.RecipeViewModelFactory(context.applicationContext as android.app.Application)
     )
-    val recentlyViewedRecipes by recipeViewModel.recentlyViewedRecipes.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
+    val recentlyViewedRecipes by recipeViewModel.searchRecentlyViewedRecipes(searchQuery).collectAsState(initial = emptyList())
 
     Scaffold(
         topBar = {

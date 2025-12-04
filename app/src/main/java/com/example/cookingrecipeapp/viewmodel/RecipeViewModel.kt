@@ -40,6 +40,30 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
         )
     }
 
+    fun searchRecipes(query: String): Flow<List<Recipe>> {
+        return if (query.isEmpty()) {
+            repository.getAllRecipes()
+        } else {
+            repository.searchRecipes(query)
+        }
+    }
+
+    fun searchFavoriteRecipes(query: String): Flow<List<Recipe>> {
+        return if (query.isEmpty()) {
+            repository.getFavoriteRecipes()
+        } else {
+            repository.searchFavoriteRecipes(query)
+        }
+    }
+
+    fun searchRecentlyViewedRecipes(query: String): Flow<List<Recipe>> {
+        return if (query.isEmpty()) {
+            repository.getRecentlyViewedRecipes()
+        } else {
+            repository.searchRecentlyViewedRecipes(query)
+        }
+    }
+
     fun getRecipe(id: Int): Flow<Recipe?> = repository.getRecipe(id)
 
     fun insert(recipe: Recipe) = viewModelScope.launch {

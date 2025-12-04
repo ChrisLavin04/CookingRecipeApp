@@ -84,8 +84,8 @@ fun HomeScreen(navController: NavController) {
     val recipeViewModel: RecipeViewModel = viewModel(
         factory = RecipeViewModelFactory(context.applicationContext as Application)
     )
-    val recipes by recipeViewModel.recipes.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
+    val recipes by recipeViewModel.searchRecipes(searchQuery).collectAsState(initial = emptyList())
 
     Scaffold(
         topBar = {
