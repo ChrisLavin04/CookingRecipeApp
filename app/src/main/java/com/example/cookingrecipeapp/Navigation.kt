@@ -49,7 +49,9 @@ fun AppNavigation() {
         composable("camera/create") {
             CameraScreen(navController = navController) { uri ->
                 capturedImageForCreate = uri.toString()
-                navController.popBackStack()
+                navController.navigate("create_recipe") {
+                    popUpTo("create_recipe") { inclusive = true }
+                }
             }
         }
         
@@ -57,10 +59,15 @@ fun AppNavigation() {
         composable(
             route = "camera/edit/{recipeId}",
             arguments = listOf(navArgument("recipeId") { type = NavType.IntType })
-        ) {
+        ) { backStackEntry ->
+            val recipeId = backStackEntry.arguments?.getInt("recipeId")
             CameraScreen(navController = navController) { uri ->
                 capturedImageForEdit = uri.toString()
-                navController.popBackStack()
+                if (recipeId != null) {
+                    navController.navigate("edit_recipe/$recipeId") {
+                        popUpTo("edit_recipe/$recipeId") { inclusive = true }
+                    }
+                }
             }
         }
         

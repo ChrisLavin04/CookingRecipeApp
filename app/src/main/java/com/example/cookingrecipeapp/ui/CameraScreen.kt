@@ -91,7 +91,6 @@ fun CameraScreen(
                 lifecycleOwner = lifecycleOwner,
                 onImageCaptured = { uri ->
                     onImageCaptured(uri)
-                    navController.popBackStack()
                 },
                 onError = { exception ->
                     // Handle error - could show a snackbar or dialog
