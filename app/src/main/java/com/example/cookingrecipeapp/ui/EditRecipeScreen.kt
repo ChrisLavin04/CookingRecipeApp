@@ -8,8 +8,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -18,6 +21,7 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -29,6 +33,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,10 +45,16 @@ import com.example.cookingrecipeapp.data.Recipe
 import com.example.cookingrecipeapp.viewmodel.RecipeViewModel
 import com.example.cookingrecipeapp.viewmodel.RecipeViewModelFactory
 import android.app.Application
+import android.net.Uri
+import coil.compose.AsyncImage
 
 
 @Composable
-fun EditRecipeScreen(navController: NavController, recipeId: Int) {
+fun EditRecipeScreen(
+    navController: NavController, 
+    recipeId: Int,
+    capturedImageUri: Uri? = null
+) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val recipeViewModel: RecipeViewModel = viewModel(
         factory = RecipeViewModelFactory(context.applicationContext as Application)
@@ -53,6 +65,7 @@ fun EditRecipeScreen(navController: NavController, recipeId: Int) {
     var recipeName by remember { mutableStateOf("") }
     var ingredients by remember { mutableStateOf("") }
     var guide by remember { mutableStateOf("") }
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
     var isLoaded by remember { mutableStateOf(false) }
 
     // Load recipe data once when it becomes available
@@ -61,7 +74,15 @@ fun EditRecipeScreen(navController: NavController, recipeId: Int) {
             recipeName = recipe!!.name
             ingredients = recipe!!.ingredients
             guide = recipe!!.guide
+            imageUri = recipe!!.imagePath?.let { Uri.parse(it) }
             isLoaded = true
+        }
+    }
+    
+    // Update image when new photo is captured
+    LaunchedEffect(capturedImageUri) {
+        if (capturedImageUri != null) {
+            imageUri = capturedImageUri
         }
     }
 
@@ -104,6 +125,32 @@ fun EditRecipeScreen(navController: NavController, recipeId: Int) {
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
+            
+            // Camera image preview section
+            if (imageUri != null) {
+                AsyncImage(
+                    model = imageUri,
+                    contentDescription = "Recipe image",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .clip(RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.Crop
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+            
+            // Camera button
+            OutlinedButton(
+                onClick = { navController.navigate("camera/edit/$recipeId") },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(Icons.Default.CameraAlt, contentDescription = "Camera", modifier = Modifier.size(24.dp))
+                Spacer(modifier = Modifier.padding(4.dp))
+                Text(if (imageUri != null) "Retake Photo" else "Take Photo")
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
                 value = recipeName,
                 onValueChange = { recipeName = it },
@@ -132,7 +179,8 @@ fun EditRecipeScreen(navController: NavController, recipeId: Int) {
                     val updatedRecipe = recipe!!.copy(
                         name = recipeName,
                         ingredients = ingredients,
-                        guide = guide
+                        guide = guide,
+                        imagePath = imageUri?.toString() // Update with new camera image
                     )
                     recipeViewModel.update(updatedRecipe)
                     navController.popBackStack()

@@ -64,6 +64,8 @@ import com.example.cookingrecipeapp.viewmodel.RecipeViewModelFactory
 import androidx.lifecycle.viewmodel.compose.viewModel
 import android.app.Application
 import com.example.cookingrecipeapp.R
+import coil.compose.AsyncImage
+import android.net.Uri
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -163,15 +165,28 @@ fun RecipeCard(navController: NavController, recipe: Recipe, onDelete: (() -> Un
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column {
-            Image(
-                painter = painterResource(id = imageRes),
-                contentDescription = recipe.name,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp)
-                    .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)),
-                contentScale = ContentScale.Crop
-            )
+            // Display camera-captured image if available, otherwise use drawable resource
+            if (recipe.imagePath != null && recipe.imagePath.isNotEmpty()) {
+                AsyncImage(
+                    model = Uri.parse(recipe.imagePath),
+                    contentDescription = recipe.name,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp)
+                        .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Image(
+                    painter = painterResource(id = imageRes),
+                    contentDescription = recipe.name,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp)
+                        .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)),
+                    contentScale = ContentScale.Crop
+                )
+            }
             Column(modifier = Modifier.padding(16.dp)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),

@@ -46,6 +46,8 @@ import com.example.cookingrecipeapp.viewmodel.RecipeViewModel
 import com.example.cookingrecipeapp.viewmodel.RecipeViewModelFactory
 import android.app.Application
 import com.example.cookingrecipeapp.ui.theme.CookingRecipeAppTheme
+import coil.compose.AsyncImage
+import android.net.Uri
 
 @OptIn(ExperimentalMaterial3Api::class)
 
@@ -126,14 +128,27 @@ fun RecipeDetailScreen(navController: NavController, recipeId: Int) {
                 item {
                     val defaultImage = com.example.cookingrecipeapp.R.drawable.ic_launcher_foreground
                     val imageRes = if (recipe.image != 0) recipe.image else defaultImage
-                    Image(
-                        painter = painterResource(id = imageRes),
-                        contentDescription = recipe.name,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(250.dp),
-                        contentScale = ContentScale.Crop
-                    )
+                    
+                    // Display camera-captured image if available, otherwise use drawable resource
+                    if (recipe.imagePath != null && recipe.imagePath.isNotEmpty()) {
+                        AsyncImage(
+                            model = Uri.parse(recipe.imagePath),
+                            contentDescription = recipe.name,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(250.dp),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(id = imageRes),
+                            contentDescription = recipe.name,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(250.dp),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
                             text = recipe.name,
