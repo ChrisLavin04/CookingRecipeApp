@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -33,7 +34,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.cookingrecipeapp.ui.theme.CookingRecipeAppTheme
+import com.example.cookingrecipeapp.worker.RecipeCleanupWorker
 
 @Composable
 fun ProfileScreen(navController: NavController) {
@@ -111,6 +115,17 @@ fun ProfileScreen(navController: NavController) {
                     Text(text = favouritesCount.toString(), fontWeight = FontWeight.Bold, fontSize = 20.sp)
                     Text(text = "Favourites")
                 }
+            }
+            Spacer(modifier = Modifier.height(32.dp))
+            
+            // Manual cleanup trigger button (for testing WorkManager)
+            Button(
+                onClick = {
+                    val cleanupWork = OneTimeWorkRequestBuilder<RecipeCleanupWorker>().build()
+                    WorkManager.getInstance(context).enqueue(cleanupWork)
+                }
+            ) {
+                Text("Clean Up Unused Images")
             }
         }
     }

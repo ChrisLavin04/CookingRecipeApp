@@ -63,6 +63,8 @@ dependencies {
     implementation(libs.androidx.camera.view)
     // Coil for image loading
     implementation(libs.coil.compose)
+    // WorkManager for background tasks
+    implementation(libs.androidx.work.runtime.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
