@@ -15,6 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -67,8 +68,15 @@ fun EditRecipeScreen(
     var recipeName by remember { mutableStateOf("") }
     var ingredients by remember { mutableStateOf("") }
     var guide by remember { mutableStateOf("") }
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    var imageUri by remember { mutableStateOf(capturedImageUri) }
     var isLoaded by remember { mutableStateOf(false) }
+
+    // Update image when new photo is captured
+    LaunchedEffect(capturedImageUri) {
+        if (capturedImageUri != null) {
+            imageUri = capturedImageUri
+        }
+    }
 
     // Load recipe data once when it becomes available
     LaunchedEffect(recipe) {
@@ -76,15 +84,11 @@ fun EditRecipeScreen(
             recipeName = recipe!!.name
             ingredients = recipe!!.ingredients
             guide = recipe!!.guide
-            imageUri = recipe!!.imagePath?.let { Uri.parse(it) }
+            // Only load recipe image if no captured image exists
+            if (imageUri == null) {
+                imageUri = recipe!!.imagePath?.let { Uri.parse(it) }
+            }
             isLoaded = true
-        }
-    }
-    
-    // Update image when new photo is captured
-    LaunchedEffect(capturedImageUri) {
-        if (capturedImageUri != null) {
-            imageUri = capturedImageUri
         }
     }
 
@@ -143,14 +147,30 @@ fun EditRecipeScreen(
                 Spacer(modifier = Modifier.height(8.dp))
             }
             
-            // Camera button
-            OutlinedButton(
-                onClick = { navController.navigate("camera/edit/$recipeId") },
-                modifier = Modifier.fillMaxWidth()
+            // Camera buttons
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Icon(Icons.Default.CameraAlt, contentDescription = "Camera", modifier = Modifier.size(24.dp))
-                Spacer(modifier = Modifier.padding(4.dp))
-                Text(if (imageUri != null) "Retake Photo" else "Take Photo")
+                OutlinedButton(
+                    onClick = { navController.navigate("camera/edit/$recipeId") },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(Icons.Default.CameraAlt, contentDescription = "Camera", modifier = Modifier.size(24.dp))
+                    Spacer(modifier = Modifier.padding(4.dp))
+                    Text(if (imageUri != null) "Retake" else "Take Photo")
+                }
+                
+                if (imageUri != null) {
+                    OutlinedButton(
+                        onClick = { imageUri = null },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(Icons.Default.Close, contentDescription = "Clear", modifier = Modifier.size(24.dp))
+                        Spacer(modifier = Modifier.padding(4.dp))
+                        Text("Clear")
+                    }
+                }
             }
             
             Spacer(modifier = Modifier.height(16.dp))

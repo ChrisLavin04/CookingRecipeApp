@@ -14,10 +14,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
@@ -128,14 +129,30 @@ fun CreateRecipeScreen(
                 Spacer(modifier = Modifier.height(8.dp))
             }
             
-            // Camera button
-            OutlinedButton(
-                onClick = { navController.navigate("camera/create") },
-                modifier = Modifier.fillMaxWidth()
+            // Camera buttons
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Icon(Icons.Default.CameraAlt, contentDescription = "Camera", modifier = Modifier.size(24.dp))
-                Spacer(modifier = Modifier.padding(4.dp))
-                Text(if (imageUri != null) "Retake Photo" else "Take Photo")
+                OutlinedButton(
+                    onClick = { navController.navigate("camera/create") },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(Icons.Default.CameraAlt, contentDescription = "Camera", modifier = Modifier.size(24.dp))
+                    Spacer(modifier = Modifier.padding(4.dp))
+                    Text(if (imageUri != null) "Retake" else "Take Photo")
+                }
+                
+                if (imageUri != null) {
+                    OutlinedButton(
+                        onClick = { imageUri = null },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(Icons.Default.Close, contentDescription = "Clear", modifier = Modifier.size(24.dp))
+                        Spacer(modifier = Modifier.padding(4.dp))
+                        Text("Clear")
+                    }
+                }
             }
             
             Spacer(modifier = Modifier.height(16.dp))

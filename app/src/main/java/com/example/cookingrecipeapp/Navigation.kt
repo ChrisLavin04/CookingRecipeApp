@@ -87,6 +87,13 @@ fun AppNavigation() {
         ) { backStackEntry ->
             val recipeId = backStackEntry.arguments?.getInt("recipeId")
             if (recipeId != null) {
+                // Clear captured image when entering edit screen for the first time
+                androidx.compose.runtime.DisposableEffect(recipeId) {
+                    onDispose {
+                        capturedImageForEdit = null
+                    }
+                }
+                
                 EditRecipeScreen(
                     navController = navController, 
                     recipeId = recipeId,

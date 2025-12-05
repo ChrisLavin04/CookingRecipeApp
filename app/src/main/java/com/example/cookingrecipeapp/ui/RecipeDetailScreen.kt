@@ -161,7 +161,7 @@ fun RecipeDetailScreen(navController: NavController, recipeId: Int) {
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold
                         )
-                        recipe.ingredients.split(",").map { it.trim() }.forEach { ingredient ->
+                        recipe.ingredients.split("\n").map { it.trim() }.filter { it.isNotEmpty() }.forEach { ingredient ->
                             Text(text = "- $ingredient")
                         }
                         Spacer(modifier = Modifier.height(16.dp))
