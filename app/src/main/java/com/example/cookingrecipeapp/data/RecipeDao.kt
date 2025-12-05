@@ -26,6 +26,15 @@ interface RecipeDao {
     @Query("SELECT * FROM recipes WHERE isViewed = 1 AND (name LIKE '%' || :query || '%' OR ingredients LIKE '%' || :query || '%')")
     fun searchRecentlyViewedRecipes(query: String): Flow<List<Recipe>>
 
+    @Query("SELECT COUNT(*) FROM recipes")
+    fun getRecipeCount(): Flow<Int>
+
+    @Query("SELECT COUNT(*) FROM recipes WHERE isFavorite = 1")
+    fun getFavoriteCount(): Flow<Int>
+
+    @Query("SELECT COUNT(*) FROM recipes WHERE isViewed = 1")
+    fun getViewedCount(): Flow<Int>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRecipe(recipe: Recipe): Long
 

@@ -22,6 +22,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,6 +37,14 @@ import com.example.cookingrecipeapp.ui.theme.CookingRecipeAppTheme
 
 @Composable
 fun ProfileScreen(navController: NavController) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val recipeViewModel: com.example.cookingrecipeapp.viewmodel.RecipeViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+        factory = com.example.cookingrecipeapp.viewmodel.RecipeViewModelFactory(context.applicationContext as android.app.Application)
+    )
+    val recipesViewed by recipeViewModel.viewedCount.collectAsState()
+    val recipesCreated by recipeViewModel.recipeCount.collectAsState()
+    val favouritesCount by recipeViewModel.favoriteCount.collectAsState()
+
     Scaffold(
         bottomBar = {
             BottomAppBar {
@@ -90,15 +100,15 @@ fun ProfileScreen(navController: NavController) {
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = "2", fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                    Text(text = "Days Active")
+                    Text(text = recipesViewed.toString(), fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                    Text(text = "Recipes Viewed")
                 }
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = "1", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                    Text(text = recipesCreated.toString(), fontWeight = FontWeight.Bold, fontSize = 20.sp)
                     Text(text = "Recipes Created")
                 }
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = "1", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                    Text(text = favouritesCount.toString(), fontWeight = FontWeight.Bold, fontSize = 20.sp)
                     Text(text = "Favourites")
                 }
             }

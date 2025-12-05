@@ -19,6 +19,9 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
     val recipes: StateFlow<List<Recipe>>
     val favoriteRecipes: StateFlow<List<Recipe>>
     val recentlyViewedRecipes: StateFlow<List<Recipe>>
+    val recipeCount: StateFlow<Int>
+    val favoriteCount: StateFlow<Int>
+    val viewedCount: StateFlow<Int>
 
     init {
         val db = AppDatabase.getDatabase(application)
@@ -37,6 +40,21 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
             viewModelScope,
             SharingStarted.Lazily,
             emptyList()
+        )
+        recipeCount = repository.getRecipeCount().stateIn(
+            viewModelScope,
+            SharingStarted.Lazily,
+            0
+        )
+        favoriteCount = repository.getFavoriteCount().stateIn(
+            viewModelScope,
+            SharingStarted.Lazily,
+            0
+        )
+        viewedCount = repository.getViewedCount().stateIn(
+            viewModelScope,
+            SharingStarted.Lazily,
+            0
         )
     }
 
