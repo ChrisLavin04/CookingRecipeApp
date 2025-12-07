@@ -221,11 +221,87 @@ fun RecipeCard(navController: NavController, recipe: Recipe, onDelete: (() -> Un
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
     CookingRecipeAppTheme {
-        HomeScreen(rememberNavController())
+        val navController = rememberNavController()
+        
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {
+                        OutlinedTextField(
+                            value = "",
+                            onValueChange = { },
+                            label = { Text("Search") },
+                            leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search Icon") },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                        )
+                    }
+                )
+            },
+            bottomBar = {
+                BottomAppBar {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        IconButton(onClick = { }) {
+                            Icon(Icons.Default.Home, contentDescription = "Home")
+                        }
+                        IconButton(onClick = { }) {
+                            Icon(Icons.Outlined.History, contentDescription = "History")
+                        }
+                        IconButton(onClick = { }) {
+                            Icon(Icons.Default.Add, contentDescription = "Add")
+                        }
+                        IconButton(onClick = { }) {
+                            Icon(Icons.Default.Favorite, contentDescription = "Favorites")
+                        }
+                        IconButton(onClick = { }) {
+                            Icon(Icons.Default.Person, contentDescription = "Profile")
+                        }
+                    }
+                }
+            }
+        ) { innerPadding ->
+            Column(modifier = Modifier.padding(innerPadding)) {
+                Text(
+                    text = "Home",
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(16.dp)
+                )
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(2) { index ->
+                        val previewRecipe = if (index == 0) {
+                            Recipe(
+                                id = 1,
+                                name = "Spaghetti Carbonara",
+                                ingredients = "Spaghetti, Eggs, Pancetta, Parmesan Cheese, Black Pepper",
+                                guide = "A delicious pasta dish.",
+                                image = R.drawable.spaghetti_carbonara
+                            )
+                        } else {
+                            Recipe(
+                                id = 2,
+                                name = "Chicken Tikka Masala",
+                                ingredients = "Chicken, Yogurt, Tomato Puree, Onion, Garam Masala",
+                                guide = "Marinate chicken in yogurt and spices.",
+                                image = R.drawable.chicken_tikka_masala
+                            )
+                        }
+                        RecipeCard(navController, previewRecipe, onToggleFavorite = { })
+                    }
+                }
+            }
+        }
     }
 }
 

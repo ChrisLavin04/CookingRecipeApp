@@ -53,7 +53,10 @@ import com.example.cookingrecipeapp.viewmodel.RecipeViewModel
 import com.example.cookingrecipeapp.viewmodel.RecipeViewModelFactory
 import android.app.Application
 import android.net.Uri
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import com.example.cookingrecipeapp.ui.theme.CookingRecipeAppTheme
 
 
 @Composable
@@ -247,5 +250,13 @@ fun EditRecipeScreen(
                 Text("Update Recipe")
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun EditRecipeScreenPreview() {
+    CookingRecipeAppTheme {
+        EditRecipeScreen(navController = rememberNavController(), recipeId = 1)
     }
 }
