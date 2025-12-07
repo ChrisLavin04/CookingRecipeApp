@@ -51,13 +51,17 @@ class RecipeCleanupWorker(
             val database = AppDatabase.getDatabase(applicationContext)
             val recipes = database.recipeDao().getAllRecipesOnce()
             
-            // Get all image paths currently in use
-            val usedImagePaths = recipes
+            // Get all image paths currently in use - extract just the filenames for comparison
+            val usedImageFilenames = recipes
                 .mapNotNull { it.imagePath }
                 .filter { it.isNotEmpty() }
+                .mapNotNull { path ->
+                    // Extract filename from URI path (e.g., "file:///.../.../RECIPE_123.jpg" -> "RECIPE_123.jpg")
+                    path.substringAfterLast('/')
+                }
                 .toSet()
             
-            Log.d(TAG, "Found ${usedImagePaths.size} images in use")
+            Log.d(TAG, "Found ${usedImageFilenames.size} images in use by recipes")
             
             // Get all image files in storage
             val storageDir = applicationContext.filesDir
@@ -67,19 +71,22 @@ class RecipeCleanupWorker(
             
             Log.d(TAG, "Found ${imageFiles.size} image files in storage")
             
-            // Delete unused image files
+            // Delete unused image files - compare by filename
             var deletedCount = 0
             imageFiles.forEach { file ->
-                val filePath = file.toURI().toString()
-                if (!usedImagePaths.contains(filePath)) {
+                if (!usedImageFilenames.contains(file.name)) {
                     if (file.delete()) {
                         deletedCount++
                         Log.d(TAG, "Deleted unused image: ${file.name}")
+                    } else {
+                        Log.w(TAG, "Failed to delete unused image: ${file.name}")
                     }
+                } else {
+                    Log.d(TAG, "Keeping image in use: ${file.name}")
                 }
             }
             
-            Log.d(TAG, "Cleanup complete. Deleted $deletedCount unused images")
+            Log.d(TAG, "Cleanup complete. Deleted $deletedCount unused images out of ${imageFiles.size} total")
             
             // Return success
             Result.success()

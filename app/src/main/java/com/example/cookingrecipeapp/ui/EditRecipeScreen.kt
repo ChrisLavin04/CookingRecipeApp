@@ -27,8 +27,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -70,6 +74,12 @@ fun EditRecipeScreen(
     var guide by remember { mutableStateOf("") }
     var imageUri by remember { mutableStateOf(capturedImageUri) }
     var isLoaded by remember { mutableStateOf(false) }
+    
+    var showNameError by remember { mutableStateOf(false) }
+    var showIngredientsError by remember { mutableStateOf(false) }
+    var showGuideError by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     // Update image when new photo is captured
     LaunchedEffect(capturedImageUri) {
@@ -93,6 +103,7 @@ fun EditRecipeScreen(
     }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         bottomBar = {
             BottomAppBar {
                 Row(
@@ -176,28 +187,48 @@ fun EditRecipeScreen(
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
                 value = recipeName,
-                onValueChange = { recipeName = it },
+                onValueChange = { 
+                    recipeName = it
+                    showNameError = false
+                },
                 label = { Text("Recipe Name") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                isError = showNameError,
+                supportingText = if (showNameError) {{ Text("Recipe name is required") }} else null
             )
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
                 value = ingredients,
-                onValueChange = { ingredients = it },
+                onValueChange = { 
+                    ingredients = it
+                    showIngredientsError = false
+                },
                 label = { Text("Ingredients") },
                 modifier = Modifier.fillMaxWidth(),
-                minLines = 4
+                minLines = 4,
+                isError = showIngredientsError,
+                supportingText = if (showIngredientsError) {{ Text("Ingredients are required") }} else null
             )
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
                 value = guide,
-                onValueChange = { guide = it },
+                onValueChange = { 
+                    guide = it
+                    showGuideError = false
+                },
                 label = { Text("Guide") },
                 modifier = Modifier.fillMaxWidth(),
-                minLines = 6
+                minLines = 6,
+                isError = showGuideError,
+                supportingText = if (showGuideError) {{ Text("Guide is required") }} else null
             )
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = {
+                // Reset error states
+                showNameError = recipeName.isBlank()
+                showIngredientsError = ingredients.isBlank()
+                showGuideError = guide.isBlank()
+                
                 if (recipeName.isNotBlank() && ingredients.isNotBlank() && guide.isNotBlank() && recipe != null) {
                     val updatedRecipe = recipe!!.copy(
                         name = recipeName,
@@ -207,6 +238,10 @@ fun EditRecipeScreen(
                     )
                     recipeViewModel.update(updatedRecipe)
                     navController.popBackStack()
+                } else {
+                    scope.launch {
+                        snackbarHostState.showSnackbar("Please fill in all required fields")
+                    }
                 }
             }) {
                 Text("Update Recipe")
